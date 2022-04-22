@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class SpawnTile : MonoBehaviour
 {
-    public GameObject tileToSpawn;
+    Transform player;
+    List<GameObject> tiles = new List<GameObject>();
+    public GameObject [] tileToSpawn;
     public GameObject referenceObject;
     public float timeOffset = 0.4f;
     public float distanceBetweenTiles = 5.0F;
@@ -16,6 +18,7 @@ public class SpawnTile : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        player = FindObjectOfType<PlayerMovement>().transform;
         previousTilePosition = referenceObject.transform.position;
         startTime = Time.time;
     }
@@ -36,7 +39,17 @@ public class SpawnTile : MonoBehaviour
             }
             Vector3 spawnPos = previousTilePosition + distanceBetweenTiles * direction;
             startTime = Time.time;
-            Instantiate(tileToSpawn, spawnPos, Quaternion.Euler(0, 0, 0));
+            GameObject tile = Instantiate(tileToSpawn[Random.Range(0,tileToSpawn.Length)], spawnPos, Quaternion.Euler(0, 0, 0));
+            tiles.Add(tile);
+           
+            if((tiles[0].transform.position - player.transform.position).magnitude > 10f)
+            {
+                Destroy(tiles[0]);
+                tiles.RemoveAt(0);
+            }
+        
+            
+            
             previousTilePosition = spawnPos;
         }
     }
